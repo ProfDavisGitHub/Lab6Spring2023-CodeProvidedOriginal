@@ -85,11 +85,11 @@ int main()
     // Setup Interrupt callback functions for a pb hit
     pb1.attach_deasserted(&pb1_hit_callback);
     pb2.attach_deasserted(&pb2_hit_callback);
-    pb3.attach_deasserted(&pb2_hit_callback);
+    pb3.attach_deasserted(&pb3_hit_callback);
     // Start sampling pb inputs using interrupts
     pb1.setSampleFrequency();
     pb2.setSampleFrequency();
-    pb2.setSampleFrequency();
+    pb3.setSampleFrequency();
     // pushbuttons now setup and running
 
 
@@ -102,6 +102,8 @@ int main()
     mySpeaker.PlayNote(500.0, 1.0, 1.0); // Speaker buzz
     myShiftbrite.write( 0, 50 ,0); // Green RGB LED
     // SD card write file example - prints error message on PC when running until SD card hooked up
+    // Delete to avoid blinking LED run time error
+    mkdir("/sd/mydir", 0777); // set up directory and permissions
     FILE *fp = fopen("/sd/mydir/sdtest.txt", "w"); //open SD
     if(fp == NULL) {
         error("Could not open file for write\n");
@@ -114,7 +116,7 @@ int main()
 
 
 
-    // State machine code below will need changes
+    // State machine code below will need changes and additions
     while (1) {
         {
             enum Statetype { Heat_off = 0, Heat_on };
@@ -122,15 +124,18 @@ int main()
             while(1) {
                 switch (state) {
                     case Heat_off:
-                        myLED2 = 0;
+                        myLED4 = 0;
                         state = Heat_on;
                         break;
                     case Heat_on:
-                        myLED2 = 1;
+                        myLED4 = 1;
                         state = Heat_off;
                         break;
                 }
                 wait(0.33);
+                // heartbeat LED - common debug tool
+                // blinks as long as code is running and not locked up
+                myLED1=!myLED1;
             }
         }
     }
