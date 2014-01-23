@@ -3,7 +3,7 @@
 #include "mbed.h"
 #include "TMP36.h"
 #include "SDFileSystem.h"
-#include "TextLCD.h"
+#include "uLCD_4DGL.h"
 #include "PinDetect.h"
 #include "Speaker.h"
 // must add your new class code to the project file Shiftbrite.h
@@ -15,13 +15,13 @@ TMP36 myTMP36(p15);  //Analog in
 // use class to setup microSD card filesystem
 SDFileSystem sd(p5, p6, p7, p8, "sd");
 
-// use class to setup the LCD
-TextLCD myLCD(p22, p23, p24, p25, p26, p27); // rs, e, d4-d7
+// use class to setup the  Color LCD
+uLCD_4DGL uLCD(p28, p27, p29); // create a global uLCD object
 
 // use class to setup pushbuttons pins
-PinDetect pb1(p28);
-PinDetect pb2(p29);
-PinDetect pb3(p30);
+PinDetect pb1(p23);
+PinDetect pb2(p24);
+PinDetect pb3(p25);
 
 // use class to setup speaker pin
 Speaker mySpeaker(p21); //PWM out
@@ -35,8 +35,7 @@ DigitalOut myLED2(LED2);
 DigitalOut myLED3(LED3);
 DigitalOut myLED4(LED4);
 
-// heat or code mode jumper - removed when pushbuttons added
-DigitalIn jumper_wire(p14);
+
 
 //also setting any unused analog input pins to digital outputs reduces A/D noise a bit
 //see http://mbed.org/users/chris/notebook/Getting-best-ADC-performance/
@@ -53,7 +52,7 @@ DigitalOut P20(p20);
 // C variables in interrupt routines should use volatile keyword
 int volatile heat_setting=78; // heat to temp
 int volatile cool_setting=68; // cool to temp
-bool volatile mode=false; // heat or cool mpde
+bool volatile mode=false; // heat or cool mode
 
 // Callback routine is interrupt activated by a debounced pb1 hit
 void pb1_hit_callback (void)
@@ -96,13 +95,13 @@ int main()
     // start I/O examples - DELETE THIS IN YOUR CODE..BUT WILL USE THESE I/O IDEAS ELSEWHERE
     // since all this compiles - the needed *.h files for these are in the project
     //
-    Current_temp = myTMP36;
-    printf("Hello PC World\n\r"); // need terminal application running on PC to see this
-    myLCD.printf("Hello LCD World"); // LCD
+    Current_temp = myTMP36; //Read temp sensor
+    printf("Hello PC World\n\r"); // need terminal application running on PC to see this output
+    uLCD.printf("\n\rHello LCD World\n\r"); // LCD
     mySpeaker.PlayNote(500.0, 1.0, 1.0); // Speaker buzz
     myShiftbrite.write( 0, 50 ,0); // Green RGB LED
     // SD card write file example - prints error message on PC when running until SD card hooked up
-    // Delete to avoid blinking LED run time error
+    // Delete to avoid run time error
     mkdir("/sd/mydir", 0777); // set up directory and permissions
     FILE *fp = fopen("/sd/mydir/sdtest.txt", "w"); //open SD
     if(fp == NULL) {
