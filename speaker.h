@@ -1,12 +1,16 @@
+#ifndef SPEAKER_H
+#define SPEAKER_H
+
 #include "mbed.h"
 // new class to play a note on Speaker based on PwmOut class
 class Speaker
 {
 public:
     Speaker(PinName pin) : _pin(pin) {
-// _pin(pin) means pass pin to the Speaker Constructor
+    // _pin(pin) means pass pin to the Speaker Constructor
     }
-// class method to play a note based on PwmOut class
+    
+    // class method to play a note based on PwmOut class
     void PlayNote(float frequency, float duration, float volume) {
         _pin.period(1.0/frequency);
         _pin = volume/2.0;
@@ -17,3 +21,5 @@ public:
 private:
     PwmOut _pin;
 };
+
+#endif
